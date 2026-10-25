@@ -1,0 +1,45 @@
+name: Compilar GeoTracker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar APK
+        run: |
+          chmod +x ./gradlew 2>/dev/null || true
+          if [ -f ./gradlew ]; then
+            ./gradlew assembleDebug
+          elif [ -f ./gradlew.txt ]; then
+            mv ./gradlew.txt ./gradlew
+            chmod +x ./gradlew
+            ./gradlew assembleDebug
+          else
+            echo "No se encuentra gradlew. Hay que revisar la estructura del proyecto."
+            exit 1
+          fi
+
+      - name: Guardar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GeoTracker-APK
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
