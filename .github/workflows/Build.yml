@@ -1,0 +1,12 @@
+name: GeoTracker
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  prueba:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comprobar funcionamiento
+        run: echo "GitHub Actions funciona correctamente"
